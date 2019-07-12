@@ -4,19 +4,36 @@ import (
 	"context"
 	"log"
 	"fmt"
-	// "github.com/kr/pretty"
+	"github.com/go-ini/ini"
 
 	"googlemaps.github.io/maps"
 )
 
+var (
+	apikey string
+)
+
+func init(){
+	cfg,err := ini.Load("google.ini")
+	if err != nil{
+		log.Println("this is not ini")
+	}
+	apikey=cfg.Section("googleApi").Key("Api_key").String()
+}
+
 func main(){
-	c, err := maps.NewClient(maps.WithAPIKey("api_key"))
+	log.Printf("%s\n",apikey)
+	GetGoogleApi("Kasaoka","Nanba")
+}
+
+func GetGoogleApi(origin ,destination string){
+	c, err := maps.NewClient(maps.WithAPIKey(apikey))
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
 	}
 	r := &maps.DirectionsRequest{
-		Origin:      "Yokohana",
-		Destination: "Nagoya",
+		Origin:      origin,
+		Destination: destination,
 	}
 	route,_, err := c.Directions(context.Background(), r)
 	if err != nil {
